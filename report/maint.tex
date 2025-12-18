@@ -1,0 +1,313 @@
+% ==========================================================
+% Convex Shapes via Support Functions & Fourier — Research Book Template
+% File: main.tex
+% ==========================================================
+\documentclass[11pt,oneside]{book}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{listings}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black
+}
+
+% ---------- Theorem-like environments ----------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{example}{Example}[chapter]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+% ---------- Inquiry-based environments ----------
+\newtheoremstyle{inquirystyle}
+{8pt}{8pt}{}{}{\bfseries}{.}{.5em}{}
+\theoremstyle{inquirystyle}
+\newtheorem{inquiry}{Inquiry}[chapter]
+
+\newtheoremstyle{taskstyle}
+{6pt}{6pt}{}{}{\bfseries}{.}{.5em}{}
+\theoremstyle{taskstyle}
+\newtheorem{task}{Task}[chapter]
+
+\newtheoremstyle{hintstyle}
+{6pt}{6pt}{}{}{\itshape}{.}{.5em}{}
+\theoremstyle{hintstyle}
+\newtheorem{hint}{Hint}[chapter]
+
+\newtheoremstyle{teststyle}
+{6pt}{6pt}{}{}{\bfseries}{.}{.5em}{}
+\theoremstyle{teststyle}
+\newtheorem{test}{Test}[chapter]
+
+% ---------- Short macros ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Sone}{\mathbb{S}^1}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\e}{\mathrm{e}}
+
+% ---------- Code listing (Python) ----------
+\lstdefinestyle{py}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue!70!black},
+  commentstyle=\color{green!40!black},
+  stringstyle=\color{red!50!black},
+  showstringspaces=false,
+  frame=single,
+  rulecolor=\color{black!15},
+  breaklines=true,
+  tabsize=4
+}
+\lstset{style=py}
+
+% ---------- Document meta ----------
+\title{Convex Shapes, Support Functions, and Fourier Representations\\
+\large An Inquiry-Driven Research Book (Living Document)}
+\author{Joel Amir Dario Maldonado Tänori}
+\date{\today}
+
+\begin{document}
+\frontmatter
+\maketitle
+\tableofcontents
+
+% ==========================================================
+% Preface / How to use
+% ==========================================================
+\chapter*{How to Use This Book}
+\addcontentsline{toc}{chapter}{How to Use This Book}
+
+This is a living research book organized as a sequence of inquiries. Each chapter has:
+(i) a small number of \textbf{Inquiries} (what we want to understand),
+(ii) \textbf{Tasks} (proofs, computations, plots),
+(iii) \textbf{Tests} (sanity checks / invariants),
+(iv) a short \textbf{Synthesis} (what is now known, what remains uncertain).
+
+\paragraph{Workflow.}
+Write a short entry every time you (a) prove something, (b) run an experiment, (c) change a definition, or (d) update code.
+
+\paragraph{Reproducibility.}
+Every figure should have: data source, script path, parameters, and seed (if randomized).
+
+% ==========================================================
+% Notation
+% ==========================================================
+\chapter*{Notation and Conventions}
+\addcontentsline{toc}{chapter}{Notation and Conventions}
+
+\begin{itemize}[leftmargin=1.2em]
+\item A convex body is $K\subset\R^2$ compact, convex, with nonempty interior (unless stated otherwise).
+\item Unit direction $u(\theta) = (\cos\theta,\sin\theta)$, $\theta\in[0,2\pi)$.
+\item Support function $h_K(\theta) = \sup_{x\in K} \ip{x}{u(\theta)}$.
+\item Radial function (for star-shaped sets) $r(\theta)$ defined when appropriate.
+\item Fourier series convention: for periodic $f(\theta)$,
+\[
+f(\theta)\approx \sum_{k=-K}^{K} c_k \e^{ik\theta},\quad
+c_k = \frac{1}{2\pi}\int_0^{2\pi} f(\theta)\e^{-ik\theta}\dd\theta.
+\]
+\end{itemize}
+
+\mainmatter
+
+% ==========================================================
+% Chapter 1
+% ==========================================================
+\chapter{Support Functions: The Dual Geometry}
+
+\section{Core definitions}
+\begin{definition}[Support function]
+Let $K\subset\R^2$ be convex and compact. Its support function is
+\[
+h_K(\theta)=\max_{x\in K}\ip{x}{u(\theta)},\qquad u(\theta)=(\cos\theta,\sin\theta).
+\]
+\end{definition}
+
+\begin{inquiry}[What does $h(\theta)$ measure?]
+Explain geometrically what $h_K(\theta)$ represents (supporting line, directional extent), and why it is a natural object for packing/collision.
+\end{inquiry}
+
+\begin{task}[Translation identity]\label{task:translation-identity}
+Prove that for any $v\in\R^2$,
+\[
+h_{K+v}(\theta) = h_K(\theta) + \ip{v}{u(\theta)}.
+\]
+\end{task}
+
+\begin{hint}
+Use the definition and substitute $y=x+v$.
+\end{hint}
+
+\begin{task}[Rotation identity]\label{task:rotation-identity}
+Let $R_\phi$ be rotation by $\phi$. Prove:
+\[
+h_{R_\phi K}(\theta)=h_K(\theta-\phi).
+\]
+\end{task}
+
+\begin{test}[Numerical sanity checks]\label{test:basic-invariances}
+Implement a routine to sample $h_K(\theta)$ for a polygon and verify \Cref{task:translation-identity,task:rotation-identity} numerically to within tolerance.
+\end{test}
+
+\section{Synthesis}
+\paragraph{What we now know.}
+\begin{itemize}[leftmargin=1.2em]
+\item Translation acts as adding a first-harmonic linear functional.
+\item Rotation acts as phase shift on $\theta$.
+\end{itemize}
+\paragraph{What remains unclear.}
+\begin{itemize}[leftmargin=1.2em]
+\item Which geometric features are stable under Fourier truncation?
+\item How convexity constraints appear as inequalities on $h$.
+\end{itemize}
+
+% ==========================================================
+% Chapter 2
+% ==========================================================
+\chapter{Fourier Representation of Support Functions}
+
+\section{Sampling and FFT pipeline}
+\begin{inquiry}[What does smoothness mean spectrally?]
+Relate regularity of $h(\theta)$ (smooth vs corners) to decay of Fourier coefficients.
+\end{inquiry}
+
+\begin{task}[FFT experiment template]\label{task:fft-template}
+Pick a shape $K$ and produce:
+(i) $K$ in physical space,
+(ii) plot of $h(\theta)$,
+(iii) log-magnitude spectrum $|c_k|$.
+\end{task}
+
+\begin{test}[Rotation as phase shift in Fourier coefficients]\label{test:phase-shift}
+Rotate $K$ by $\phi$ and verify $c_k$ changes by factor $\e^{-ik\phi}$ (up to numerical error).
+\end{test}
+
+\section{Notes / results}
+% Add short derivations, observed decay rates, and failure modes here.
+
+% ==========================================================
+% Chapter 3
+% ==========================================================
+\chapter{Teaching Set: Circle, Ellipse, Square, Regular Polygons}
+
+\section{Circle}
+\begin{inquiry}[Why is the circle spectrally sparse?]
+Explain why only the $k=0$ mode remains for $h(\theta)\equiv R$.
+\end{inquiry}
+
+\section{Ellipse}
+\begin{inquiry}[Anisotropy in Fourier space]
+Explain the qualitative structure of Fourier coefficients for an ellipse and how it differs from a circle.
+\end{inquiry}
+
+\section{Square and corners}
+\begin{inquiry}[Corners as high-frequency content]
+Explain and illustrate Gibbs-like artifacts when truncating Fourier series of a square support function.
+\end{inquiry}
+
+% ==========================================================
+% Chapter 4
+% ==========================================================
+\chapter{Constant Width, Radial Functions, and Convex Hull}
+
+\section{Constant width}
+\begin{inquiry}[Constant width constraint]
+Show (or verify) the identity
+\[
+h(\theta)+h(\theta+\pi)=\text{constant}
+\]
+for constant-width shapes and interpret in Fourier terms.
+\end{inquiry}
+
+\section{Radial vs support}
+\begin{inquiry}[What does the support function forget?]
+Compare a nonconvex star-shaped example $r(\theta)=1+\varepsilon\cos(k\theta)$ with its convex hull and explain which features vanish in $h(\theta)$.
+\end{inquiry}
+
+% ==========================================================
+% Chapter 5
+% ==========================================================
+\chapter{Toward Packing: Collision, Minkowski Sums, and Configuration Space}
+
+\begin{inquiry}[Why support functions are good for packing]
+Formulate collision/clearance in terms of support functions (e.g., via Minkowski difference / separating hyperplanes). Identify what becomes linear and what remains nonlinear.
+\end{inquiry}
+
+\begin{task}[Minkowski sum identity]
+Prove $h_{A+B}(\theta)=h_A(\theta)+h_B(\theta)$ for convex compact sets $A,B$.
+\end{task}
+
+\begin{task}[Computational check]
+Numerically verify Minkowski-sum additivity for polygons by sampling $h$.
+\end{task}
+
+% ==========================================================
+% Chapter 6
+% ==========================================================
+\chapter{Application: Christmas Tree Shape}
+
+\section{Tree geometry}
+\begin{inquiry}[Tree in support-function space]
+Compute $h(\theta)$ for the Christmas tree polygon and its convex hull. Compare spectra and discuss what geometric information is lost under convexification.
+\end{inquiry}
+
+\section{Band-limited approximations}
+\begin{inquiry}[How many Fourier modes are enough?]
+Define an accuracy metric (Hausdorff proxy, area error, max support error) and study how approximation quality scales with truncation level $K$.
+\end{inquiry}
+
+% ==========================================================
+% Appendix: Reproducibility
+% ==========================================================
+\appendix
+\chapter{Reproducibility Ledger}
+
+\section{Figure checklist}
+For each figure, record:
+\begin{itemize}[leftmargin=1.2em]
+\item Script path:
+\item Data / parameters:
+\item Random seed:
+\item Output file path:
+\end{itemize}
+
+\section{Code snippets}
+\begin{lstlisting}[caption={Support function sampling (placeholder)},label={lst:support-fn}]
+# TODO: implement in your repo; include path and commit hash in ledger.
+def support_function_polygon(poly, thetas):
+    # return max_{v in vertices} <v, u(theta)> for each theta
+    ...
+\end{lstlisting}
+
+\backmatter
+\chapter*{Change Log}
+\addcontentsline{toc}{chapter}{Change Log}
+% Append brief dated notes about structural changes to the book.
+
+\end{document}
